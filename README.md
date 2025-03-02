@@ -1,27 +1,26 @@
-# VaR & ES Playground: Understanding Downside Risk
+# Binomial Options Pricing Model Playground: Understanding Discrete-Time Option Pricing
 
 ## 1. What Is This?
 
-This interactive application demonstrates two critical risk management measures:
+This interactive application demonstrates the **Binomial Options Pricing Model**, a discrete-time framework for pricing options by constructing a price tree (lattice).
 
-- **Value at Risk (VaR):**  
-  Estimates the maximum expected loss over a specified time period at a given confidence level. For example, a 1-day 95% VaR of €50,000 implies that there is a 5% chance the portfolio could lose more than €50,000 in one day.
+- **What It Is:**  
+  The model simulates possible price paths for an underlying asset by dividing the time to expiration into a finite number of steps. At each step, the asset price can move up or down by predetermined factors, which helps in computing the option's fair value under risk-neutral pricing.
 
-- **Expected Shortfall (ES):**  
-  Also known as Conditional VaR (CVaR), it calculates the average loss beyond the VaR threshold, giving a clearer picture of tail risk.
+- **Why Teach It:**  
+  It simplifies the intuition behind risk-neutral pricing and serves as a foundation for understanding more advanced continuous-time models like Black-Scholes. In addition, it illustrates how delta hedging can be implemented in a discrete setting.
 
-The playground offers two methods for calculating these metrics:
-- **Parametric (Variance-Covariance) Method:** Assumes normally distributed returns and uses the mean and volatility to compute VaR and ES.
-- **Historical Simulation Method:** Computes risk measures using simulated (or historical) returns without assuming a specific distribution.
+- **Example:**  
+  Price a European call (or put) option using a 2-step binomial tree, and observe the corresponding delta hedging ratio.
 
-With interactive controls, you can adjust parameters such as portfolio value, expected daily return, daily volatility, confidence level, and the historical window length to see how these factors affect your risk estimates.
+**Note:** This tool is for educational purposes only. Accuracy is not guaranteed, and the computed option prices and hedging ratios do not represent actual market values. The author is Luís Simões da Cunha.
 
 ## 2. Setting Up a Local Development Environment
 
 ### 2.1 Prerequisites
 
 1. **A computer** (Windows, macOS, or Linux).
-2. **Python 3.9 or higher** (Python 3.12 preferred, but anything 3.9+ should be fine).  
+2. **Python 3.9 or higher** (Python 3.12 preferred, but anything 3.9+ should work).  
    - If you do not have Python installed, visit [python.org/downloads](https://www.python.org/downloads/) to install the latest version.
 3. **Visual Studio Code (VS Code)**
    - Download from [code.visualstudio.com](https://code.visualstudio.com/)
@@ -39,16 +38,16 @@ With interactive controls, you can adjust parameters such as portfolio value, ex
    ```
 3. Run the following command:
    ```bash
-   git clone https://github.com/yourusername/var_es_playground.git
+   git clone https://github.com/yourusername/binomial_options_pricing_playground.git
    ```
 4. Enter the project folder:
    ```bash
-   cd var_es_playground
+   cd binomial_options_pricing_playground
    ```
 
 #### Option 2: Download as ZIP
 
-1. Visit [https://github.com/yourusername/var_es_playground](https://github.com/yourusername/var_es_playground)
+1. Visit [https://github.com/yourusername/binomial_options_pricing_playground](https://github.com/yourusername/binomial_options_pricing_playground)
 2. Click **Code > Download ZIP**.
 3. Extract the ZIP file into a local folder.
 
@@ -82,43 +81,43 @@ pip install -r requirements.txt
 
 This command installs libraries such as:
 - **Streamlit** (for the interactive UI)
-- **NumPy** and **SciPy** (for mathematical and statistical computations)
+- **NumPy** (for numerical computations)
 - **Matplotlib** (for plotting results)
 
 ## 3. Running the Application
 
-To launch the VaR & ES playground, execute:
+To launch the Binomial Options Pricing Model playground, execute:
 
 ```bash
-streamlit run var_es_playground.py
+streamlit run binomial_options_pricing.py
 ```
 
 This should open a new tab in your web browser with the interactive tool. If it does not open automatically, check the terminal for a URL (e.g., `http://localhost:8501`) and open it manually.
 
 ### 3.1 Troubleshooting
 
-- **ModuleNotFoundError:** Ensure the virtual environment is activated (`venv\Scripts\activate` or `source venv/bin/activate`).
-- **Python not recognized:** Ensure Python is installed and added to your system's PATH.
+- **ModuleNotFoundError:** Ensure the virtual environment is activated (`venv\Scripts\activate` on Windows or `source venv/bin/activate` on macOS/Linux).
+- **Python not recognized:** Make sure Python is installed and added to your system's PATH.
 - **Browser does not open automatically:** Manually enter the `http://localhost:8501` URL in your browser.
 
 ## 4. Editing the Code
 
 If you want to make modifications:
-1. Open `var_es_playground.py` in **VS Code**.
+1. Open `binomial_options_pricing.py` in **VS Code**.
 2. Modify the code as needed.
-3. Restart the Streamlit app after changes (`Ctrl + C` to stop, then rerun `streamlit run var_es_playground.py`).
+3. Restart the Streamlit app after changes (press `Ctrl + C` in the terminal to stop, then rerun `streamlit run binomial_options_pricing.py`).
 
 ## 5. Additional Resources
 
 - **Streamlit Documentation:** [docs.streamlit.io](https://docs.streamlit.io)
-- **Value at Risk (VaR) Overview:** [Investopedia Guide](https://www.investopedia.com/terms/v/var.asp)
-- **Expected Shortfall (ES) Information:** [Investopedia Guide](https://www.investopedia.com/terms/e/expectedshortfall.asp)
+- **Binomial Options Pricing Model Overview:** [Investopedia Guide](https://www.investopedia.com/terms/b/binomialoptionpricingmodel.asp)
+- **Risk-Neutral Pricing and Delta Hedging:** Look for educational materials and tutorials online.
 
 ## 6. Support
 
 For issues or suggestions, open an **Issue** on GitHub:  
-[https://github.com/yourusername/var_es_playground/issues](https://github.com/yourusername/var_es_playground/issues)
+[https://github.com/yourusername/binomial_options_pricing_playground/issues](https://github.com/yourusername/binomial_options_pricing_playground/issues)
 
 ---
 
-*Happy exploring VaR & ES and managing downside risk!*
+*Happy exploring the Binomial Options Pricing Model and enhancing your understanding of discrete-time option pricing!*
