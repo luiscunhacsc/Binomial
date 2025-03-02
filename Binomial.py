@@ -31,7 +31,7 @@ def set_lab2_parameters():
     st.session_state["T_slider"] = 1.0
     st.session_state["r_slider"] = 0.05
     st.session_state["sigma_slider"] = 0.2
-    st.session_state["steps_slider"] = 50
+    st.session_state["steps_slider"] = 5
     st.session_state["option_type_radio"] = 'call'
 
 def set_lab3_parameters():
@@ -74,7 +74,7 @@ def binomial_option_pricing(S, K, T, r, sigma, steps, option_type='call'):
     
     # Compute delta using the first step nodes:
     if steps == 1:
-        # One-step tree: directly compute payoffs
+        # One-step tree
         S_up = S * u
         S_down = S * d
         if option_type == 'call':
@@ -85,8 +85,7 @@ def binomial_option_pricing(S, K, T, r, sigma, steps, option_type='call'):
             V_down = max(K - S_down, 0)
         delta = (V_up - V_down) / (S_up - S_down)
     elif steps == 2:
-        # Two-step tree: manually compute time-1 values
-        # Prices at maturity:
+        # Two-step tree
         S_uu = S * u * u
         S_ud = S * u * d
         S_dd = S * d * d
@@ -98,17 +97,90 @@ def binomial_option_pricing(S, K, T, r, sigma, steps, option_type='call'):
             V_uu = max(K - S_uu, 0)
             V_ud = max(K - S_ud, 0)
             V_dd = max(K - S_dd, 0)
-        # Backward induction for time-1 nodes:
         V_u = np.exp(-r * delta_t) * (p * V_uu + (1 - p) * V_ud)
         V_d = np.exp(-r * delta_t) * (p * V_ud + (1 - p) * V_dd)
         delta = (V_u - V_d) / (S * u - S * d)
     else:
-        # For steps > 2, approximate delta via a one-step difference
+        # Approximate delta for steps > 2
         V_up = binomial_option_pricing(S * u, K, T - delta_t, r, sigma, steps - 1, option_type)[0]
         V_down = binomial_option_pricing(S * d, K, T - delta_t, r, sigma, steps - 1, option_type)[0]
         delta = (V_up - V_down) / (S * u - S * d)
     
     return price, delta
+
+#######################################
+# 2a) Function to plot a binomial tree diagram (up to 5 steps)
+#######################################
+def plot_binomial_tree(S, K, T, r, sigma, steps, option_type='call'):
+    """
+    Plots the binomial tree (stock prices + option values) up to 5 steps.
+    If steps > 5, a message is displayed instead of a full tree.
+    """
+    if steps > 5:
+        st.info("Tree diagram is only displayed for up to 5 steps. Reduce the steps slider to 5 or fewer.")
+        return
+    
+    delta_t = T / steps
+    u = np.exp(sigma * np.sqrt(delta_t))
+    d = 1 / u
+    p = (np.exp(r * delta_t) - d) / (u - d)
+    
+    # Arrays to store stock prices and option values
+    stock_prices = [[0]*(j+1) for j in range(steps+1)]
+    option_vals = [[0]*(j+1) for j in range(steps+1)]
+    
+    # Fill in stock prices
+    for j in range(steps+1):
+        for i in range(j+1):
+            stock_prices[j][i] = S * (u**i) * (d**(j - i))
+    
+    # Compute payoff at maturity
+    for i in range(steps+1):
+        if option_type == 'call':
+            option_vals[steps][i] = max(stock_prices[steps][i] - K, 0)
+        else:
+            option_vals[steps][i] = max(K - stock_prices[steps][i], 0)
+    
+    # Backward induction for option values
+    for j in range(steps-1, -1, -1):
+        for i in range(j+1):
+            option_vals[j][i] = np.exp(-r*delta_t) * (
+                p*option_vals[j+1][i+1] + (1-p)*option_vals[j+1][i]
+            )
+    
+    # Plotting
+    fig, ax = plt.subplots(figsize=(7, 4))
+    
+    # Plot each node
+    for j in range(steps+1):
+        for i in range(j+1):
+            x = j
+            # center the nodes vertically
+            y = i - j/2
+            label = f"S={stock_prices[j][i]:.1f}\nV={option_vals[j][i]:.1f}"
+            ax.plot(x, y, 'ko', markersize=4)
+            ax.text(
+                x, y, label, ha='center', va='center', fontsize=6,
+                bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.3')
+            )
+    
+    # Draw connecting lines
+    for j in range(steps):
+        for i in range(j+1):
+            x1, y1 = j, i - j/2
+            x2_up, y2_up = j+1, (i+1) - (j+1)/2
+            x2_down, y2_down = j+1, i - (j+1)/2
+            ax.plot([x1, x2_up], [y1, y2_up], 'k-', linewidth=0.8)
+            ax.plot([x1, x2_down], [y1, y2_down], 'k-', linewidth=0.8)
+    
+    ax.set_title(f"{steps}-Step Binomial Tree (Asset & Option Values)", fontsize=10)
+    ax.set_xlabel("Time Step")
+    ax.set_ylabel("Node Position")
+    ax.set_xticks(range(steps+1))
+    ax.set_yticks([])
+    ax.grid(False)
+    plt.tight_layout()
+    st.pyplot(fig)
 
 #######################################
 # 3) Configure the Streamlit app layout and sidebar
@@ -127,7 +199,7 @@ with st.sidebar:
     T = st.slider("Time to Maturity (years)", 0.1, 5.0, 1.0, key='T_slider')
     r = st.slider("Risk-Free Interest Rate (r)", 0.0, 0.2, 0.05, key='r_slider', format="%.2f")
     sigma = st.slider("Volatility (σ)", 0.1, 1.0, 0.2, key='sigma_slider', format="%.2f")
-    steps = st.slider("Number of Steps", 1, 100, 2, key='steps_slider')
+    steps = st.slider("Number of Steps", 1, 10, 2, key='steps_slider')
     option_type = st.radio("Option Type", ["call", "put"], key='option_type_radio')
     
     st.markdown("---")
@@ -184,10 +256,7 @@ with tab1:
         values = []
         for s_val in S_range:
             val, d_val = binomial_option_pricing(s_val, K, T, r, sigma, steps, option_type)
-            if selected_variable == "Option Price":
-                values.append(val)
-            else:
-                values.append(d_val)
+            values.append(val if selected_variable == "Option Price" else d_val)
         ax.plot(S_range, values, color='darkorange', linewidth=2)
         ax.axvline(S, color='red', linestyle='--', label='Current Stock Price')
         ax.set_title(f"{selected_variable} vs. Stock Price", fontweight='bold')
@@ -196,6 +265,10 @@ with tab1:
         ax.grid(alpha=0.3)
         ax.legend()
         st.pyplot(fig)
+    
+    # Display the binomial tree diagram for up to 5 steps
+    st.markdown(f"### Binomial Tree Diagram (Up to 5 Steps)")
+    plot_binomial_tree(S, K, T, r, sigma, steps, option_type)
 
 #######################################
 # Tab 2: Theory Behind the Model
@@ -240,8 +313,8 @@ with tab3:
 
 **Step 5: Delta Hedging**  
 - Compute the hedge ratio (delta) at the initial node as:  
-  $\Delta = \frac{V_{up} - V_{down}}{S \times (u - d)}$,  
-  where $V_{up}$ and $V_{down}$ are the option values after one time step.
+  $\Delta = \frac{V_{\text{up}} - V_{\text{down}}}{S \times (u - d)}$,  
+  where $V_{\text{up}}$ and $V_{\text{down}}$ are the option values after one time step.
 
 Experiment with different numbers of steps to see how the model converges toward continuous-time pricing.
 """)
@@ -258,7 +331,7 @@ with tab4:
       Price a European call option using a basic 2-step tree and observe the delta hedging ratio.
     
     - **Lab 2: Convergence Analysis**  
-      Increase the number of steps (e.g., 50 steps) to see how the binomial price converges toward the Black-Scholes price.
+      Increase the number of steps (e.g., 5 steps) to see how the binomial price converges toward the Black-Scholes price.
     
     - **Lab 3: Put Option Analysis**  
       Change the option type to a put and compare the pricing and delta to that of a call.
@@ -290,7 +363,7 @@ with tab4:
         Explore how increasing the number of steps refines the option price, demonstrating convergence toward continuous-time models.
         
         **Steps:**  
-        1. Click **Set Lab 2 Parameters** to use a higher number of steps.
+        1. Click **Set Lab 2 Parameters** to use up to 5 steps.
         2. Compare the option price and delta with those from a 2-step tree.
         3. Reflect on the benefits of finer time discretization.
         """)
