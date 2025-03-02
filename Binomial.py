@@ -219,32 +219,32 @@ with tab2:
 # Tab 3: Comprehensive Tutorial
 #######################################
 with tab3:
-    st.markdown("""
-    ## Comprehensive Tutorial on the Binomial Model
-    
-    **Step 1: Setting Up the Tree**  
-    - Divide the time to expiration (*T*) into *N* steps.  
-    - Compute the time interval: \\( \\Delta t = T/N \\).  
-    - Determine the up and down factors:  
-      \\( u = e^{\\sigma \\sqrt{\\Delta t}} \\) and \\( d = \\frac{1}{u} \\).
-    
-    **Step 2: Risk-Neutral Probabilities**  
-    - Calculate the risk-neutral probability \\( p \\) as:  
-      \\( p = \\frac{e^{r \\Delta t} - d}{u - d} \\).
-    
-    **Step 3: Option Valuation at Maturity**  
-    - At expiration, compute the option payoff at each node (e.g., for a call, \\( \\max(S-K,0) \\)).
-    
-    **Step 4: Backward Induction**  
-    - Discount the option values back to the present by recursively applying the risk-neutral expectation.
-    
-    **Step 5: Delta Hedging**  
-    - Compute the hedge ratio (delta) at the initial node as:  
-      \\( \\Delta = \\frac{V_{up} - V_{down}}{S \\times (u - d)} \\),  
-      where \\( V_{up} \\) and \\( V_{down} \\) are the option values after one time step.
-    
-    Experiment with different numbers of steps to see how the model converges toward continuous-time pricing.
-    """)
+    st.markdown(r"""
+## Comprehensive Tutorial on the Binomial Model
+
+**Step 1: Setting Up the Tree**  
+- Divide the time to expiration ($T$) into $N$ steps.  
+- Compute the time interval: $\Delta t = \frac{T}{N}$.  
+- Determine the up and down factors:  
+  $u = e^{\sigma \sqrt{\Delta t}}$ and $d = \frac{1}{u}$.
+
+**Step 2: Risk-Neutral Probabilities**  
+- Calculate the risk-neutral probability $p$ as:  
+  $p = \frac{e^{r \Delta t} - d}{u - d}$.
+
+**Step 3: Option Valuation at Maturity**  
+- At expiration, compute the option payoff at each node (e.g., for a call, $\max(S-K,0)$).
+
+**Step 4: Backward Induction**  
+- Discount the option values back to the present by recursively applying the risk-neutral expectation.
+
+**Step 5: Delta Hedging**  
+- Compute the hedge ratio (delta) at the initial node as:  
+  $\Delta = \frac{V_{up} - V_{down}}{S \times (u - d)}$,  
+  where $V_{up}$ and $V_{down}$ are the option values after one time step.
+
+Experiment with different numbers of steps to see how the model converges toward continuous-time pricing.
+""")
 
 #######################################
 # Tab 4: Practical Labs
